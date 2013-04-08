@@ -10,11 +10,11 @@ jQuery
 
 The set up for this is pretty simple.
 
-1) Dump your gifs in the images folder.
-2) Make sure your images folder is set writable (chmod 644 images).
-3) Hit [yourdomain.com]/cache.php to create a output cache of the images on the site. The cache is stored in the images folder. Use this domain to refresh the cache when new images are added.
-4) Include jQuery in your page.
-5) Include the bigGif plugin.
-6) When the page is ready run the plugin.
+1) Dump your gifs in the images folder.<br/>
+2) Make sure your images folder is set writable (chmod 644 images).<br/>
+3) Hit [yourdomain.com]/cache.php to create a output cache of the images on the site. The cache is stored in the images folder. Use this domain to refresh the cache when new images are added.<br/>
+4) Include jQuery in your page.<br/>
+5) Include the bigGif plugin.<br/>
+6) When the page is ready run the plugin.<br/>
 
 You can look in the index.html file for an example of how to set it up.
