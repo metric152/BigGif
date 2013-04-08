@@ -13,7 +13,7 @@ The set up for this is pretty simple.
 <ol>
 <li>Dump your gifs in the images folder.</li>
 <li>Make sure your images folder is set writable (chmod 644 images).</li>
-<li>Hit [yourdomain.com]/cache.php to create a output cache of the images on the site. The cache is stored in the images folder. Use this domain to refresh the cache when new images are added.</li>
+<li>Hit [yourdomain.com]/cache.php to create a output cache of the images on the site. The cache is stored in the images folder. Use this URL to refresh the cache when new images are added.</li>
 <li>Include jQuery in your page.</li>
 <li>Include the bigGif plugin.</li>
 <li>When the page is ready run the plugin.</li>
