@@ -1,7 +1,7 @@
 BigGif
 ======
 
-Opensource version of maxgif.com.<br/>
+Opensource version of maxgif.<br/>
 Also works really well on mobile devices.<br/>
 
 <h4>Demo</h4>
