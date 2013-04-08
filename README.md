@@ -28,3 +28,9 @@ The set up for this is pretty simple.
 <ul>
     <li>Don't leave spaces in the image names. Browsers don't seem to like that.</li>
 </ul>
+
+<h3>Missing features</h3>
+<ul>
+    <li>Browser crop.</li>
+    <li>Auto advance.</li>
+</ul>
