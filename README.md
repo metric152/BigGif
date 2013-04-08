@@ -4,9 +4,6 @@ BigGif
 Opensource version of maxgif.<br/>
 Also works really well on mobile devices.<br/>
 
-<h4>Demo</h4>
-<p><a href="http://www.152.org">152.org</a></p>
-
 Requirements:<br/>
 PHP 5 or higher<br/>
 jQuery<br/>
