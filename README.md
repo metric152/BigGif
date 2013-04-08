@@ -1,20 +1,22 @@
 BigGif
 ======
 
-Opensource version of maxgif.com.
-Also works really well on mobile devices.
+Opensource version of maxgif.com.<br/>
+Also works really well on mobile devices.<br/>
 
-Requirements:
-PHP 5 or higher
-jQuery
+Requirements:<br/>
+PHP 5 or higher<br/>
+jQuery<br/>
 
 The set up for this is pretty simple.
 
-1) Dump your gifs in the images folder.<br/>
-2) Make sure your images folder is set writable (chmod 644 images).<br/>
-3) Hit [yourdomain.com]/cache.php to create a output cache of the images on the site. The cache is stored in the images folder. Use this domain to refresh the cache when new images are added.<br/>
-4) Include jQuery in your page.<br/>
-5) Include the bigGif plugin.<br/>
-6) When the page is ready run the plugin.<br/>
+<ol>
+<li>Dump your gifs in the images folder.</li>
+<li>Make sure your images folder is set writable (chmod 644 images).</li>
+<li>Hit [yourdomain.com]/cache.php to create a output cache of the images on the site. The cache is stored in the images folder. Use this domain to refresh the cache when new images are added.</li>
+<li>Include jQuery in your page.</li>
+<li>Include the bigGif plugin.</li>
+<li>When the page is ready run the plugin.</li>
+</ol>
 
 You can look in the index.html file for an example of how to set it up.
