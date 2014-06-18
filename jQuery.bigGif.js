@@ -4,12 +4,13 @@
         this.images = [];
         this.img;
         this.callBack = callBack;
+        this.queue = [];
+        this.queueSize = 10;
         
         // Make sure body is set up properly
         $('body').css({'margin':0,'padding':0,'height':'100%','cursor':'pointer'});
         
         $.getJSON(images,jQuery.proxy(function(data){
-            var image;
             // Set our results on the array
             this.images = data.images;
             
@@ -18,6 +19,7 @@
             
             // Show the image in the url
             if(window.location.hash.length > 0){
+                buildQueue.call(this);
                 index = window.location.hash.replace("#",'');
                 loadImage.call(this,this.images[index]);
             }
@@ -44,9 +46,36 @@
             
         },this));
         
+        // Create a queue that images are pulled from
+        function buildQueue(){
+            var imageStr = "";
+            
+            // Build up the queue
+            for(var i = this.queue.length; i != this.queueSize; i++){
+                // Get our image
+                var image = this.images[Math.floor(Math.random() * this.images.length)];
+                // Add it to the queue
+                this.queue.push(image);
+                // Build the css string
+                imageStr += " url("+ image +")";
+            }
+            
+            // Add an element used for caching
+            if($('.preload').length === 0){
+                $('body').append( $('<span>', {'class': 'preload'}) );
+            }
+            
+            // Cache the images
+            $('.preload').css({'display': 'none', 'content': imageStr});
+        }
+        
         // Load a random image
         function reload(){
-            loadImage.call(this,this.images[Math.floor(Math.random() * this.images.length)]);
+            // Build the image cache queue
+            buildQueue.call(this);
+            
+            // Place the image
+            loadImage.call(this,this.queue.shift());
         }
         
         // Create the image and attach it to the page
