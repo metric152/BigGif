@@ -5,12 +5,13 @@
         this.img;
         this.callBack = callBack;
         this.queue = [];
-        this.queueSize = 10;
+        this.queueSize = 3;
         this.timer = 5; //5 secs. Set to 0 to stop it
         this.timerReference = null;
         this.paused = false;
-        this.noticeLocation = {'position':'absolute','top':0,'left':75};
+        this.noticeLocation = {'position':'absolute','top':30,'left':15};
         this.style = {'padding': '10px','color': 'white', 'background-color': 'black'};
+        this.loadingId = 'loading';
         
         // Make sure body is set up properly
         $('body').css({'margin':0,'padding':0,'height':'100%','cursor':'pointer'});
@@ -90,8 +91,16 @@
                 this.paused = true;
                 // Display the play button
                 if($paused.length == 0){
-                    $paused = $('<span>', {'id': 'paused', 'text' : 'PAUSED'}).css(this.noticeLocation).css(this.style);
+                    $paused = $('<span>', {'id': 'paused', 'text' : 'PAUSED. TAP TO START'}).css(this.noticeLocation).css(this.style);
+                    $paused.one('click', $.proxy(function(){
+                        reload.call(this);
+                        $paused.remove();
+                    }, this));
                     $('body').prepend($paused);
+                }
+                // Remove the loading notice if it's still around
+                if($('#' + this.loadingId).length >0){
+                   $('#' + this.loadingId).remove(); 
                 }
             }
 
@@ -99,6 +108,8 @@
         
         // Listen for browser changes
         function uriChange(event, stopTheTimer){
+            // The event was triggered when the URI was updated on image load. Ignore this.
+            if(event.originalEvent.state == null) return;
             // Back or forward was pressed
             stopTimer.call(this, true);
             
@@ -121,12 +132,12 @@
             }
             
             // Add an element used for caching
-            if($('.preload').length === 0){
-                $('body').append( $('<span>', {'class': 'preload'}) );
+            if($('#preload').length === 0){
+                $('body').append( $('<span>', {'id': 'preload'}) );
             }
             
             // Cache the images
-            $('.preload').css({'display': 'none', 'content': imageStr});
+            $('#preload').css({'display': 'none', 'content': imageStr});
         }
         
         // Load a random image
@@ -142,8 +153,8 @@
         function loadImage(imgName, loadIntoHistory){
             loadIntoHistory = (typeof loadIntoHistory == 'boolean') ? loadIntoHistory : true;
             
-            var loading = $('<span>',{'class':'loading','text':'LOADING'}).css(this.noticeLocation).css(this.style);
-            $('body').prepend(loading);
+            var $loading = $('<span>',{'id':this.loadingId ,'text':'LOADING'}).css(this.noticeLocation).css(this.style);
+            $('body').prepend($loading);
             
             // Create a new image object once
             if(this.img == null) this.img = new Image();
@@ -158,7 +169,7 @@
                 } 
                 
                 // Fade the loading element
-                loading.fadeOut(1000,function(){
+                $loading.fadeOut(1000,function(){
                     $(this).remove();
                 });
                 
@@ -207,12 +218,12 @@
         
         // Create a reload notice
         function showReload(){
-            var span = jQuery('<span>',{'class':'notice','text':'PRESS SPACEBAR,CLICK/TOUCH SCREEN'}).css('position','absolute').css(this.style);
-            $('body').prepend(span);
+            var $span = jQuery('<span>',{'class':'notice','text':'PRESS SPACEBAR,CLICK/TOUCH SCREEN'}).css('position','absolute').css(this.style);
+            $('body').prepend($span);
             // Center the notice
-            var left = ($('body').width() - span.width())/2;
-            var top = ($('body').height() - span.height())/2;
-            span.css({'top':top,'left':left}).fadeOut(5000,function(){
+            var left = ($('body').width() - $span.width())/2;
+            var top = ($('body').height() - $span.height())/2;
+            $span.css({'top':top,'left':left}).fadeOut(5000,function(){
                 $(this).remove();
             });
         }
