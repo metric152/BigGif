@@ -6,8 +6,11 @@
         this.callBack = callBack;
         this.queue = [];
         this.queueSize = 10;
-        this.timer = 10000; //10 secs. Set to 0 to stop it
-        this.interval = null;
+        this.timer = 5; //5 secs. Set to 0 to stop it
+        this.timerReference = null;
+        this.paused = false;
+        this.noticeLocation = {'position':'absolute','top':0,'left':75};
+        this.style = {'padding': '10px','color': 'white', 'background-color': 'black'};
         
         // Make sure body is set up properly
         $('body').css({'margin':0,'padding':0,'height':'100%','cursor':'pointer'});
@@ -17,17 +20,20 @@
             this.images = data.images;
             
             // Show reload notice
-            showReload();
+            showReload.call(this);
             
-            // Show the image in the url
-            if(window.location.hash.length > 0){
-                buildQueue.call(this);
-                hashchange.call(this);
+            // Listen for hash changes
+            $(window).on('popstate', $.proxy(uriChange, this));
+            
+            // Load an image
+            if(getImageIndex() > 0){
+                // Place the image
+                loadImage.call(this, this.images[getImageIndex()]);
             }
-            // Load a new one
-            else{
+            else {
                 reload.call(this);
             }
+            
                         
             // Update the image on resize
             $(window).resize(jQuery.proxy(update,this));
@@ -35,47 +41,69 @@
             // Hotkey for new image
             $(document).keyup(jQuery.proxy(function(event){
                 if(event.keyCode == 32){
+                    // Stop the timer if the screen was tapped or a key was pressed
+                    stopTimer.call(this);
+                    // Load new image
                     reload.call(this);
                 }
             },this));
+            
             // Make the body clickable
             $('body').click(jQuery.proxy(function(event){
                 if(event.target.tagName.toLowerCase() === 'body'){
+                    // Stop the timer if the screen was tapped or a key was pressed
+                    stopTimer.call(this);
+                    // Load new image
                     reload.call(this);
                 }
             },this));
-            
-            // Check to see if we should go to the next image automatically
-            startTimer.call(this);
-            
-            // Listen for hash changes
-            $(window).on('hashchange', $.proxy(hashchange, this, true));
-            
         },this));
         
         // Start the timer if it's set up
         function startTimer(){
-            if(this.timer > 0){
-                this.interval = setInterval($.proxy(reload, this), this.timer);
+            if(this.timer > 0 && !this.paused){
+                this.timerReference = setTimeout($.proxy(reload, this), this.timer * 1000);
             }
+        }
+        
+        // Check to see if we're supposed to load an image from the URI
+        function getImageIndex(){
+            var imageIndex = 0;
+            
+            if(window.location.hash.length > 0){
+                imageIndex = +window.location.hash.replace("#",'');
+            }
+            
+            return imageIndex;
         }
         
         // Stop the timer
-        function stopTimer(){
+        function stopTimer(pauseTimer){
+            var $paused = $('#paused');
             // Clear the timer
             if(this.timer > 0){
-                clearInterval(this.interval);
+                clearTimeout(this.timerReference);
             }
+            
+            // Stop loading images
+            if(pauseTimer){
+                this.paused = true;
+                // Display the play button
+                if($paused.length == 0){
+                    $paused = $('<span>', {'id': 'paused', 'text' : 'PAUSED'}).css(this.noticeLocation).css(this.style);
+                    $('body').prepend($paused);
+                }
+            }
+
         }
         
         // Listen for browser changes
-        function hashchange(stopTheTimer){
-            if(typeof stopTheTimer === 'boolean'){
-                stopTimer.call(this);
-            }
+        function uriChange(event, stopTheTimer){
+            // Back or forward was pressed
+            stopTimer.call(this, true);
             
-            index = window.location.hash.replace("#",'');
-            loadImage.call(this,this.images[index]);
+            // Load the image in the state object
+            loadImage.call(this,event.originalEvent.state.imageName, false);
         }
         
         // Create a queue that images are pulled from
@@ -98,7 +126,6 @@
             }
             
             // Cache the images
-            // http://www.thecssninja.com/css/even-better-image-preloading-with-css2
             $('.preload').css({'display': 'none', 'content': imageStr});
         }
         
@@ -112,8 +139,10 @@
         }
         
         // Create the image and attach it to the page
-        function loadImage(imgName){
-            var loading = $('<span>',{'class':'loading','text':'LOADING'}).css({'position':'absolute','top':0,'left':75});
+        function loadImage(imgName, loadIntoHistory){
+            loadIntoHistory = (typeof loadIntoHistory == 'boolean') ? loadIntoHistory : true;
+            
+            var loading = $('<span>',{'class':'loading','text':'LOADING'}).css(this.noticeLocation).css(this.style);
             $('body').prepend(loading);
             
             // Create a new image object once
@@ -124,16 +153,25 @@
                 $('body').css({'background':'url('+imgName+') no-repeat center center'});
                 
                 // Update the URL
-                window.location.hash = $.inArray(imgName,this.images);
+                if(loadIntoHistory){
+                    window.history.pushState({'imageName': imgName}, null, "#" + $.inArray(imgName,this.images));
+                } 
+                
+                // Fade the loading element
                 loading.fadeOut(1000,function(){
                     $(this).remove();
                 });
                 
+                // Check to see if we should go to the next image automatically
+                startTimer.call(this);
+                // Update the background
                 update.call(this);
+                
+                // If there is a callback run it
+                if(this.callBack) this.callBack();
             },this);
             // Trigger the loading code
             this.img.src = imgName;
-            
         }
         
         // Resize the image when the window does
@@ -163,13 +201,13 @@
                 }
             }
             
+            // Resize the background image
             $('body').css({'background-size':(this.img.width * delta)+'px ' + (this.img.height * delta)+'px'});
-            if(this.callBack) this.callBack();
         } 
         
         // Create a reload notice
         function showReload(){
-            var span = jQuery('<span>',{'class':'notice','text':'PRESS SPACEBAR,CLICK/TOUCH SCREEN'}).css('position','absolute');
+            var span = jQuery('<span>',{'class':'notice','text':'PRESS SPACEBAR,CLICK/TOUCH SCREEN'}).css('position','absolute').css(this.style);
             $('body').prepend(span);
             // Center the notice
             var left = ($('body').width() - span.width())/2;
