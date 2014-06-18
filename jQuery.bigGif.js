@@ -6,6 +6,8 @@
         this.callBack = callBack;
         this.queue = [];
         this.queueSize = 10;
+        this.timer = 10000; //10 secs. Set to 0 to stop it
+        this.interval = null;
         
         // Make sure body is set up properly
         $('body').css({'margin':0,'padding':0,'height':'100%','cursor':'pointer'});
@@ -20,8 +22,7 @@
             // Show the image in the url
             if(window.location.hash.length > 0){
                 buildQueue.call(this);
-                index = window.location.hash.replace("#",'');
-                loadImage.call(this,this.images[index]);
+                hashchange.call(this);
             }
             // Load a new one
             else{
@@ -42,9 +43,40 @@
                 if(event.target.tagName.toLowerCase() === 'body'){
                     reload.call(this);
                 }
-            },this)); 
+            },this));
+            
+            // Check to see if we should go to the next image automatically
+            startTimer.call(this);
+            
+            // Listen for hash changes
+            $(window).on('hashchange', $.proxy(hashchange, this, true));
             
         },this));
+        
+        // Start the timer if it's set up
+        function startTimer(){
+            if(this.timer > 0){
+                this.interval = setInterval($.proxy(reload, this), this.timer);
+            }
+        }
+        
+        // Stop the timer
+        function stopTimer(){
+            // Clear the timer
+            if(this.timer > 0){
+                clearInterval(this.interval);
+            }
+        }
+        
+        // Listen for browser changes
+        function hashchange(stopTheTimer){
+            if(typeof stopTheTimer === 'boolean'){
+                stopTimer.call(this);
+            }
+            
+            index = window.location.hash.replace("#",'');
+            loadImage.call(this,this.images[index]);
+        }
         
         // Create a queue that images are pulled from
         function buildQueue(){
