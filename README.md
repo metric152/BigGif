@@ -19,8 +19,8 @@ The set up for this is pretty simple.
 <li>When the page is ready run the plugin.</li>
 </ol>
 
-<p>The plugin take two parameters. The first is the path to the image cache. The cache is a json document that contains an array of image locations. This property is required.</p>
-<p>The second parameter is a callBack that runs after the background has been updated. This is not required.</p>
+<p>The plugin takes two parameters. The first is the path to the image cache. The cache is a json document that contains an array of image locations. This property is required.</p>
+<p>The second parameter is a callBack that runs after the background has been updated. This is optional.</p>
 
 <p>You can look in the index.html file for an example of how to set it up.</p>
 
@@ -32,5 +32,5 @@ The set up for this is pretty simple.
 <h3>Missing features</h3>
 <ul>
     <li>Browser crop.</li>
-    <li>Auto advance.</li>
+    <li>Auto advance after x secs.</li>
 </ul>
