@@ -66,6 +66,7 @@
             }
             
             // Cache the images
+            // http://www.thecssninja.com/css/even-better-image-preloading-with-css2
             $('.preload').css({'display': 'none', 'content': imageStr});
         }
         
