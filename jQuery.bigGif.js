@@ -12,6 +12,7 @@
         this.noticeLocation = {'position':'absolute','top':30,'left':15};
         this.style = {'padding': '10px','color': 'white', 'background-color': 'black'};
         this.loadingId = 'loading';
+        this.pausedId = 'paused';
         
         // Make sure body is set up properly
         $('body').css({'margin':0,'padding':0,'height':'100%','cursor':'pointer'});
@@ -52,6 +53,11 @@
             // Make the body clickable
             $('body').click(jQuery.proxy(function(event){
                 if(event.target.tagName.toLowerCase() === 'body'){
+                    // If we're paused remove the notice and start the timer
+                    if(this.paused){
+                        this.paused = false;
+                        $('#' + this.pausedId).remove()
+                    }
                     // Stop the timer if the screen was tapped or a key was pressed
                     stopTimer.call(this);
                     // Load new image
@@ -91,11 +97,7 @@
                 this.paused = true;
                 // Display the play button
                 if($paused.length == 0){
-                    $paused = $('<span>', {'id': 'paused', 'text' : 'PAUSED. TAP TO START'}).css(this.noticeLocation).css(this.style);
-                    $paused.one('click', $.proxy(function(){
-                        reload.call(this);
-                        $paused.remove();
-                    }, this));
+                    $paused = $('<span>', {'id': this.pausedId, 'text' : 'PAUSED. TAP TO START'}).css(this.noticeLocation).css(this.style);
                     $('body').prepend($paused);
                 }
                 // Remove the loading notice if it's still around
