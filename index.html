@@ -8,7 +8,7 @@
 		<!-- Not required -->
 		<style type="text/css">
 		    body{font-family: Arial;}
-			footer{color: black; text-align: center;display: none;font-size: 0.9em;}
+			footer{color: black; text-align: center;display: none;font-size: 0.9em; opacity: 0.5; display: block; bottom: 0px; position: fixed; width: 100%;}
 			div.contents{border:1px solid silver; background-color: white; margin: 0 auto; width: auto;}
 			a:link,a:visited,a:active,a:hover{color: black;}
 		</style>
@@ -20,10 +20,7 @@
 		<script type="text/javascript">
 		    // Wait till page is ready then run the plugin
 		    $(function(){
-    		    jQuery().bigGif('images/images.json',function(){
-    		    // Move the footer to the right spot
-				$('footer').css('padding-top',window.innerHeight - $('footer').height()).fadeTo('fast',0.5).show();
-		    });
+    		    jQuery().bigGif('images/images.json');
 		    });
 	    </script>
 	</head>

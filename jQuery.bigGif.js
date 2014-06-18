@@ -1,4 +1,4 @@
-(function(){
+(function($){
 
     function BigGif(images,callBack){
         this.images = [];
@@ -9,6 +9,7 @@
         $('body').css({'margin':0,'padding':0,'height':'100%','cursor':'pointer'});
         
         $.getJSON(images,jQuery.proxy(function(data){
+            var image;
             // Set our results on the array
             this.images = data.images;
             
@@ -35,8 +36,10 @@
                 }
             },this));
             // Make the body clickable
-            $('body').click(jQuery.proxy(function(){
-                reload.call(this);
+            $('body').click(jQuery.proxy(function(event){
+                if(event.target.tagName.toLowerCase() === 'body'){
+                    reload.call(this);
+                }
             },this)); 
             
         },this));
@@ -55,7 +58,6 @@
             if(this.img == null) this.img = new Image();
             
             this.img.onload = jQuery.proxy(function(){
-                console.log('loaded: ' + imgName);
                 // Apply the image to the background
                 $('body').css({'background':'url('+imgName+') no-repeat center center'});
                 
@@ -69,6 +71,7 @@
             },this);
             // Trigger the loading code
             this.img.src = imgName;
+            
         }
         
         // Resize the image when the window does
@@ -119,4 +122,4 @@
     jQuery.fn.extend({
         bigGif:BigGif
     });
-})();
+})(jQuery);
