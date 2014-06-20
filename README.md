@@ -21,9 +21,11 @@ The set up for this is pretty simple.
 
 <p>
 Options: <br/>
+The plugin takes a object to configure itself.<br/>
 <ul>
 <li>jsonFile (required): the path to the image cache. The cache is a json document that contains an array of image locations. This property is required.</li>
-<li>callback: a callBack that runs after the background has been updated.</li>
+<li>callback: A callBack that runs after the background has been updated.</li>
+<li>timer: The amount of time in seconds an image will show. Default is 0.</li>
 </ul>
 </p>
 
