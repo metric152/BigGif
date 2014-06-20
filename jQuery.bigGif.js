@@ -1,70 +1,89 @@
 (function($){
 
-    function BigGif(images,callBack){
+    function BigGif(options){
         this.images = [];
         this.img;
-        this.callBack = callBack;
+        this.callBack;
         this.queue = [];
-        this.queueSize = 3;
-        this.timer = 5; //5 secs. Set to 0 to stop it
+        this.queueSize = 10;
+        this.timer = 7; //7 secs. Set to 0 to stop it
         this.timerReference = null;
         this.paused = false;
         this.noticeLocation = {'position':'absolute','top':30,'left':15};
         this.style = {'padding': '10px','color': 'white', 'background-color': 'black'};
         this.loadingId = 'loading';
         this.pausedId = 'paused';
+        this.isMobile = false;
         
-        // Make sure body is set up properly
-        $('body').css({'margin':0,'padding':0,'height':'100%','cursor':'pointer'});
-        
-        $.getJSON(images,jQuery.proxy(function(data){
-            // Set our results on the array
-            this.images = data.images;
+        if(typeof arguments[0] == 'object'){
+            // Apply our options to the class
+            $.extend(this, options);
             
-            // Show reload notice
-            showReload.call(this);
+            // Make sure body is set up properly
+            $('body').css({'margin':0,'padding':0,'height':'100%','cursor':'pointer'});
             
-            // Listen for hash changes
-            $(window).on('popstate', $.proxy(uriChange, this));
-            
-            // Load an image
-            if(getImageIndex() > 0){
-                // Place the image
-                loadImage.call(this, this.images[getImageIndex()]);
-            }
-            else {
-                reload.call(this);
+            // Test for mobile
+            this.isMobile = window.matchMedia("(max-width: 768px)").matches;
+            if(this.isMobile) {
+                // Queue fewer images
+                this.queueSize = 3;
             }
             
-                        
-            // Update the image on resize
-            $(window).resize(jQuery.proxy(update,this));
-            
-            // Hotkey for new image
-            $(document).keyup(jQuery.proxy(function(event){
-                if(event.keyCode == 32){
-                    // Stop the timer if the screen was tapped or a key was pressed
-                    stopTimer.call(this);
-                    // Load new image
+            // Load the file
+            loadJsonFile.call(this, options.jsonFile);
+        }
+        
+        // Load the file we're given
+        function loadJsonFile(file){
+            $.getJSON(file,jQuery.proxy(function(data){
+                // Set our results on the array
+                this.images = data.images;
+                
+                // Show reload notice
+                showReload.call(this);
+                
+                // Listen for hash changes
+                $(window).on('popstate', $.proxy(uriChange, this));
+                
+                // Load an image
+                if(getImageIndex() > 0){
+                    // Place the image
+                    loadImage.call(this, this.images[getImageIndex()]);
+                }
+                else {
                     reload.call(this);
                 }
-            },this));
-            
-            // Make the body clickable
-            $('body').click(jQuery.proxy(function(event){
-                if(event.target.tagName.toLowerCase() === 'body'){
-                    // If we're paused remove the notice and start the timer
-                    if(this.paused){
-                        this.paused = false;
-                        $('#' + this.pausedId).remove()
+                
+                            
+                // Update the image on resize
+                $(window).resize(jQuery.proxy(update,this));
+                
+                // Hotkey for new image
+                $(document).keyup(jQuery.proxy(function(event){
+                    if(event.keyCode == 32){
+                        // Stop the timer if the screen was tapped or a key was pressed
+                        stopTimer.call(this);
+                        // Load new image
+                        reload.call(this);
                     }
-                    // Stop the timer if the screen was tapped or a key was pressed
-                    stopTimer.call(this);
-                    // Load new image
-                    reload.call(this);
-                }
+                },this));
+                
+                // Make the body clickable
+                $('body').click(jQuery.proxy(function(event){
+                    if(event.target.tagName.toLowerCase() === 'body'){
+                        // If we're paused remove the notice and start the timer
+                        if(this.paused){
+                            this.paused = false;
+                            $('#' + this.pausedId).remove()
+                        }
+                        // Stop the timer if the screen was tapped or a key was pressed
+                        stopTimer.call(this);
+                        // Load new image
+                        reload.call(this);
+                    }
+                },this));
             },this));
-        },this));
+        }
         
         // Start the timer if it's set up
         function startTimer(){
